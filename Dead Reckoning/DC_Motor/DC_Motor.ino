@@ -1,7 +1,6 @@
 /*
  * Demo of Hercules control DC Motor
  *
- * Loovee
  * 2014-6-27
  *
  * This demo will show you how to control a DC motor
@@ -18,30 +17,55 @@
 #include <Hercules.h>
 
 bool done = false; //stop moving.
-//int 1meter = 58.5/1000
 
 void setup()
 {
-    MOTOR.begin();                      // initialize
+    MOTOR.begin();
+}
+
+// move Brian forward the requested distance at the requested speed
+// unit is centimeters by popular demand 
+void move_straight(int distance, int speed) 
+{ 
+  int factor [] = {60, 53, 52, 51, 48, 44, 40, 40, 40, 40}; 
+  int new_factor = factor[(speed/10) - 1];
+  
+  if (speed >= 30) {
+    move_straight(3, 10);
+    distance = distance - 7; 
+  }
+  
+  MOTOR.setSpeedDir1(speed - 1, DIRF); 
+  MOTOR.setSpeedDir2(speed, DIRF);
+  delay((new_factor*distance)/(speed/10.0));  
+}
+
+// move Brian the angular distance at the requested speed 
+void turn(int angle, int speed) 
+{
+  MOTOR.setSpeedDir1(speed, DIRF);
+  MOTOR.setSpeedDir2(speed, DIRR);
+  delay(angle*11);
+}
+
+void stop_brian(int nap_length)
+{
+  MOTOR.setStop1(); 
+  MOTOR.setStop2(); 
+  delay(nap_length*1000); 
 }
 
 void loop()
 {
   if (!done) {
-// 1. Drive Forward 1 meter
-  MOTOR.setSpeedDir1(9, DIRF); //10% drive forward
-  MOTOR.setSpeedDir2(10, DIRF);
-  delay(5800); // 4250
-  
-// 2. Stop for 2 seconds
-  MOTOR.setStop1();
-  MOTOR.setStop2();
-  delay(2000);
-  
+
+  //move_straight(100, 50); // move Brian forward 1 meter 
+  turn(180,20); 
+  stop_brian(2000);
+   
+/*
 // 3. Rotate 90 degrees
-  MOTOR.setSpeedDir1(20, DIRF);
-  MOTOR.setSpeedDir2(20, DIRR);
-  delay(1000); // 1150
+  
 
   MOTOR.setStop1();
   MOTOR.setStop2();
@@ -66,7 +90,7 @@ void loop()
   MOTOR.setStop2();
   delay(4000);
 
-  //make a little hug
+ // 
   MOTOR.setSpeedDir(10, DIRF);
   delay(300);
   
@@ -112,5 +136,6 @@ void loop()
 //  done = true;
 //  MOTOR.setStop1();
 //  MOTOR.setStop2();
+*/ 
   }
 }
