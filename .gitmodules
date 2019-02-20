@@ -1,3 +1,6 @@
 [submodule "Grove_Ultrasonic_Ranger"]
 	path = Grove_Ultrasonic_Ranger
 	url = https://github.com/Seeed-Studio/Grove_Ultrasonic_Ranger.git
+[submodule "Hercules_Motor_Driver"]
+	path = Hercules_Motor_Driver
+	url = https://github.com/Seeed-Studio/Hercules_Motor_Driver
