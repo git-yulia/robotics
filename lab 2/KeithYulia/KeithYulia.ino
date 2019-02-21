@@ -87,10 +87,6 @@ void loop()
   MOTOR.setStop1();
   MOTOR.setStop2();
   delay(4000);
-<<<<<<< HEAD:Dead Reckoning/DC_Motor/Keith_Julia_Octavio_Lab2.ino
-=======
-
->>>>>>> 80f46485df6e243ae4110fdf7305fca785e766f0:Dead Reckoning/DC_Motor/DC_Motor.ino
  // 
   MOTOR.setSpeedDir(10, DIRF);
   delay(300);
