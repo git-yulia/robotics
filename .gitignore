@@ -2,3 +2,5 @@
 */.DS_Store
 *.zip
 *.json
+out/**
+lab 3/KeithYulia/out/**
