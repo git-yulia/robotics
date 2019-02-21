@@ -78,14 +78,23 @@ void loop()
   if (RangeInCentimeters < 20) {
     stop_brian(2.5);
     Serial.print("TURNING BRIAN ");
-    turn(90, 40);
+    turn(100, 20);
+    stop_brian(2.5);
+
+    Serial.print(RangeInCentimeters);//0~400cm
+     Serial.println(" cm");
 
     // check if brian did not accidentally turn into the wall
+    delay(100); 
     RangeInCentimeters = ultrasonic.MeasureInCentimeters();
     if (RangeInCentimeters < 15) {
       stop_brian(2.5);
       Serial.print("TURNING BRIAN AGAIN");
-      turn(90, 40);
+      turn(100, 20);
+      stop_brian(2.5);
+
+      Serial.print(RangeInCentimeters);//0~400cm
+      Serial.println(" cm");
     }
     
     
