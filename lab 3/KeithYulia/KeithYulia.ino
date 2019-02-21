@@ -9,11 +9,14 @@ Julia Maliauka, Keith Skinner
 #include <Ultrasonic.h>
 
 const long freqLeftForward = 10000;
-const long freqRightForward = 7800;
+const long freqRightForward = 8400;
+
+const long freqLeftTurn = 10000;
+const long freqRightTurn = 10000;
 
 const int forwardPower = 20;
-const int rightAngleTurnDelay = 294;
-const int rightAngleTurnPower = 60;
+const int rightAngleTurnDelay = 590;
+const int rightAngleTurnPower = 30;
 
 const char Forward = DIRF;
 const char Backward = DIRR;
@@ -64,9 +67,9 @@ namespace brian
         stop_right();
     }
 
-    void move_left(char dir, char speed)
+    void move_left(char dir, char speed, long freq)
     {
-        PWM.setPwm(9, speed, freqLeftForward);
+        PWM.setPwm(9, speed, freq);
         ALLMOSON;
         if(dir == DIRF)
         {
@@ -80,9 +83,9 @@ namespace brian
         }
     }
 
-    void move_right(char dir, char speed)
+    void move_right(char dir, char speed, long freq)
     {
-        PWM.setPwm(10, speed, freqRightForward);
+        PWM.setPwm(10, speed, freq);
         ALLMOSON;
         if(dir == DIRF)
         {
@@ -98,26 +101,26 @@ namespace brian
 
     void move_forward(char speed = forwardPower)
     {
-        move_right(Forward, speed);
-        move_left(Forward, speed);
+        move_right(Forward, speed, freqRightForward);
+        move_left(Forward, speed, freqLeftForward);
     }
 
     void move_backward(char speed = forwardPower)
     {
-        move_right(Backward, speed);
-        move_left(Backward, speed);
+        move_right(Backward, speed, freqRightForward);
+        move_left(Backward, speed, freqLeftForward);
     }
 
     void move_counter_clockwise(char speed = rightAngleTurnPower)
     {
-        move_right(Forward, speed);
-        move_left(Backward, speed);
+        move_right(Forward, speed, freqRightTurn);
+        move_left(Backward, speed, freqLeftTurn);
     }
 
     void move_clockwise(char speed = rightAngleTurnPower)
     {
-        move_right(Backward, speed);
-        move_left(Forward, speed);
+        move_right(Backward, speed, freqRightTurn);
+        move_left(Forward, speed, freqLeftTurn);
     }
 
     double getRadarValue()
@@ -171,50 +174,55 @@ void rot(int t)
     delay(3000);
 }
 
+void yulia()
+{
+
+    double RangeInCentimeters;
+
+    //move_straight(100, 50); // move Brian forward 1 meter 
+    //turn(180,20); 
+
+
+    // IF THIS BREAKS ITS BECAUSE HIS THING IS LOOSE 
+
+    RangeInCentimeters = brian::getClampedRadarValue(100); // two measurements should keep an interval
+    Serial.print(RangeInCentimeters);//0~400cm
+    Serial.println(" cm");
+
+    if (RangeInCentimeters < 20) {
+        brian::stop_both();
+        delay(2500);
+        Serial.print("TURNING BRIAN ");
+        brian::move_clockwise();
+        delay(rightAngleTurnDelay);
+        brian::stop_both();
+        delay(2500);
+
+        Serial.print(RangeInCentimeters);//0~400cm
+        Serial.println(" cm");
+
+        // check if brian did not accidentally turn into the wall
+        delay(100); 
+        RangeInCentimeters = brian::getClampedRadarValue(100);
+        if (RangeInCentimeters < 15) {
+            brian::stop_both();
+            Serial.print("TURNING BRIAN AGAIN");
+            brian::move_clockwise();
+            delay(rightAngleTurnDelay);
+            brian::stop_both();
+            delay(300);
+
+            Serial.print(RangeInCentimeters);//0~400cm
+            Serial.println(" cm");
+        }
+    }
+    brian::move_forward();
+    delay(250); 
+}
+
 void loop()
 {
-    double dist = brian::read_radar();
-
-    brian::move_forward();
-    auto tea = millis();
-    while (dist > 10  &&  millis() <= tea + 400)
-        dist = brian::read_radar();
-    brian::stop_both();
-    delay(200);
-
-    brian::move_counter_clockwise();
-    delay(rightAngleTurnDelay);
-    brian::stop_both();
-    delay(200);
-
-    double dist1 = brian::read_radar();
-    Serial.print("Distance 1: ");
-    Serial.println(dist1);
-
-    brian::move_counter_clockwise();
-    delay(rightAngleTurnDelay);
-    brian::stop_both();
-    delay(200);
-    brian::move_counter_clockwise();
-    delay(rightAngleTurnDelay);
-    brian::stop_both();
-    delay(200);
-
-    double dist2 = brian::read_radar();
-    Serial.print("Distance 2: ");
-    Serial.println(dist2);
-    
-    brian::move_counter_clockwise();
-    delay(rightAngleTurnDelay);
-    brian::stop_both();
-    delay(200);
-
-    double delta = abs(dist1 - dist2);
-    Serial.print("Delta: ");
-    Serial.println(delta);
-
-    brian::stop_both();
-    delay(2000);
+    yulia();
 }
 
 //TODO: Make brian move forward even straighter.
