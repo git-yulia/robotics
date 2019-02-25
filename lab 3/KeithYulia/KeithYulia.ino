@@ -157,53 +157,23 @@ namespace brian
     }
 }
 
-
-
-void setup()
-{
-    brian::begin();
-    Serial.begin(9600);
-}
-
-void rot(int t)
-{
-    Serial.println("Hi");
-    brian::move_clockwise(60);
-    delay(t);
-    brian::stop_both();
-    delay(3000);
-}
-
 void yulia()
 {
-
-    double RangeInCentimeters;
-
-    //move_straight(100, 50); // move Brian forward 1 meter 
-    //turn(180,20); 
-
+    /// At this point Brian is either going straight or has not 
 
     // IF THIS BREAKS ITS BECAUSE HIS THING IS LOOSE 
-
-    RangeInCentimeters = brian::getClampedRadarValue(100); // two measurements should keep an interval
-    Serial.print(RangeInCentimeters);//0~400cm
-    Serial.println(" cm");
-
+    double RangeInCentimeters = brian::read_radar();
     if (RangeInCentimeters < 20) {
         brian::stop_both();
         delay(2500);
-        Serial.print("TURNING BRIAN ");
         brian::move_clockwise();
         delay(rightAngleTurnDelay);
         brian::stop_both();
         delay(2500);
 
-        Serial.print(RangeInCentimeters);//0~400cm
-        Serial.println(" cm");
-
         // check if brian did not accidentally turn into the wall
         delay(100); 
-        RangeInCentimeters = brian::getClampedRadarValue(100);
+        RangeInCentimeters = brian::read_radar();
         if (RangeInCentimeters < 15) {
             brian::stop_both();
             Serial.print("TURNING BRIAN AGAIN");
@@ -218,6 +188,12 @@ void yulia()
     }
     brian::move_forward();
     delay(250); 
+}
+
+void setup()
+{
+    brian::begin();
+    Serial.begin(9600);
 }
 
 void loop()
