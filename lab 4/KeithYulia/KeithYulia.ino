@@ -15,8 +15,8 @@ const long freqRightForward = 8400;
 const long freqLeftTurn = 10000;
 const long freqRightTurn = 10000;
 
-const int forwardPower = 20;
-const int rightAngleTurnDelay = 590;
+const int forwardPower = 60;
+const int rightAngleTurnDelay = 640;
 const int rightAngleTurnPower = 30;
 
 const char Forward = DIRF;
@@ -64,10 +64,11 @@ namespace brian
         digitalWrite(PINM2R, LOW);
     }
 
-    void stop_both()
+    void stop_both(int pause = 0)
     {
         stop_left();
         stop_right();
+        delay(pause);
     }
 
     void move_left(char dir, char speed, long freq)
@@ -161,7 +162,10 @@ namespace brian
 
     int read_light()
     {
-        return 1024 - analogRead(analogPin);
+        int light = 1024 - analogRead(analogPin);
+        Serial.print("Light: ");
+        Serial.println(light);
+        return light;
     }
 }
 
@@ -205,13 +209,13 @@ void brianDoThings()
    delay(100);
 
     // step 1: spin brian in a circle
-    int sob = 4*rightAngleTurnDelay - 100;
+    int fullCircle = 4*rightAngleTurnDelay - 100;
     int maxValue = 0;
     time_t maxValueTime = millis();
     time_t start = millis();
     time_t current_time = start;
     brian::turn_clockwise();
-    while (current_time < start + sob) {
+    while (current_time < start + fullCircle) {
         int lightSensorValue = brian::read_light();
         Serial.println(lightSensorValue);
         if (lightSensorValue > maxValue) {
@@ -227,6 +231,7 @@ void brianDoThings()
     time_t deltaTime =  maxValueTime - start;
     brian::turn_clockwise();
     delay(deltaTime);
+    delay(200);
 
     // step 2: moth mode 
 
@@ -250,7 +255,20 @@ void setup()
 
 void loop()
 {
-    brianDoThings();
-    brian::stop_both();
-    delay(50000000);
+    bool stop = false;
+    while (!stop) {
+        brianDoThings();
+        brian::stop_both();
+        brian::move_forward();
+
+        delay(500);
+
+        if (brian::read_light() > 700) {
+            while (brian::read_radar() > 15) {
+                brian::move_forward();
+            } 
+            stop = true;
+            brian::stop_both();
+        }   
+    }
 }
