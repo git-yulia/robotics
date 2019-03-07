@@ -233,7 +233,7 @@ void brianDoThings()
     delay(deltaTime);
     delay(200);
 
-    // step 2: moth mode 
+    // step 2: moth mode: move forward, but
 
     Serial.print("Start: ");
     Serial.println(start);
@@ -262,13 +262,13 @@ void loop()
         brian::move_forward();
 
         delay(500);
-
+        
         if (brian::read_light() > 700) {
             while (brian::read_radar() > 15) {
                 brian::move_forward();
             } 
             stop = true;
             brian::stop_both();
-        }   
+        }    
     }
 }
