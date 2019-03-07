@@ -163,8 +163,8 @@ namespace brian
     int read_light()
     {
         int light = 1024 - analogRead(analogPin);
-        Serial.print("Light: ");
-        Serial.println(light);
+        //Serial.print("Light: ");
+        // Serial.println(light);
         return light;
     }
 }
@@ -217,7 +217,7 @@ void brianDoThings()
     brian::turn_clockwise();
     while (current_time < start + fullCircle) {
         int lightSensorValue = brian::read_light();
-        Serial.println(lightSensorValue);
+        //Serial.println(lightSensorValue);
         if (lightSensorValue > maxValue) {
             maxValue = lightSensorValue;
             maxValueTime = millis();
@@ -227,7 +227,7 @@ void brianDoThings()
     }
     brian::stop_both();
     delay(500);
-    Serial.println(maxValue);
+    //Serial.println(maxValue);
     time_t deltaTime =  maxValueTime - start;
     brian::turn_clockwise();
     delay(deltaTime);
@@ -235,14 +235,14 @@ void brianDoThings()
 
     // step 2: moth mode: move forward, but
 
-    Serial.print("Start: ");
-    Serial.println(start);
-    Serial.print("maxValueTime: ");
-    Serial.println(maxValueTime);
-    Serial.print("deltaTime: ");
-    Serial.println(deltaTime);
-    Serial.print("maxValue: ");
-    Serial.println(maxValue);
+    // Serial.print("Start: ");
+    // Serial.println(start);
+    // Serial.print("maxValueTime: ");
+    // Serial.println(maxValueTime);
+    // Serial.print("deltaTime: ");
+    // Serial.println(deltaTime);
+    // Serial.print("maxValue: ");
+    // Serial.println(maxValue);
 }
 
 void setup()
@@ -255,20 +255,21 @@ void setup()
 
 void loop()
 {
-    bool stop = false;
-    while (!stop) {
-        brianDoThings();
-        brian::stop_both();
-        brian::move_forward();
+    brianDoThings();
+    brian::stop_both();
 
-        delay(500);
-        
-        if (brian::read_light() > 700) {
-            while (brian::read_radar() > 15) {
-                brian::move_forward();
-            } 
-            stop = true;
-            brian::stop_both();
-        }    
-    }
+    //if (brian::read_radar() > 30) {
+    brian::move_forward();
+    //}
+
+    delay(500);
+    /*
+    if (brian::read_light() > 600) {
+        while (brian::read_radar() > 15) {
+            brian::move_forward();
+        } 
+        stop = true;
+        brian::stop_both();
+    }    
+    */ 
 }
