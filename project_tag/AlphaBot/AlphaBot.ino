@@ -1,5 +1,8 @@
 /*
     Project TAG
+    Julia Maliauka, Keith Skinner, Octavio Leon, James Morris 
+    Spring 2019 
+    Mobile Robotics 
  */
 
 #include <seeed_pwm.h>
