@@ -5,13 +5,10 @@
     Mobile Robotics 
  */
 
- // J10 and J9 and J10 on the board. rx is green - j9. texas is blue - j10. 
-
 #include <seeed_pwm.h>
 #include <Hercules_dfs.h>
 #include <Ultrasonic.h>
 #include <Time.h>
-// #include <ESP8266WiFi.h> 
 
 const long freqLeftForward = 10000;
 const long freqRightForward = 8400;
@@ -35,7 +32,6 @@ namespace brian
 {
     void begin()
     {
-
         PWM.init();
         PWM.setPwm(9, 0, freqLeftForward);
         PWM.setPwm(10, 0, freqRightForward);
@@ -154,135 +150,28 @@ namespace brian
     double read_radar()
     {
         double total = 0;
+
         for (int i=0; i<5; ++i){
             total += getClampedRadarValue(100.0);
             delay(50);
         }
+
         total /= 5.0;
         Serial.println(total);
         return total;
     }
-
-    int read_light()
-    {
-        int light = 1024 - analogRead(analogPin);
-        //Serial.print("Light: ");
-        // Serial.println(light);
-        return light;
-    }
 }
 
-void brianDoThings()
-{
-    /// At this point Brian is either going straight or has not 
 
-    // IF THIS BREAKS ITS BECAUSE HIS THING IS LOOSE 
-    /* 
-    double RangeInCentimeters = brian::read_radar();
-    if (RangeInCentimeters < 20) {
-        brian::stop_both();
-        delay(2500);
-        brian::move_clockwise();
-        delay(rightAngleTurnDelay);
-        brian::stop_both();
-        delay(2500);
-
-        // check if brian did not accidentally turn into the wall
-        delay(100); 
-        RangeInCentimeters = brian::read_radar();
-        if (RangeInCentimeters < 15) {
-            brian::stop_both();
-            Serial.print("TURNING BRIAN AGAIN");
-            brian::move_clockwise();
-            delay(rightAngleTurnDelay);
-            brian::stop_both();
-            delay(300);
-
-            Serial.print(RangeInCentimeters);//0~400cm
-            Serial.println(" cm");
-        }
-    }
-    brian::move_forward();
-    delay(250); 
-    */
-
-   // input range is 0 - 1023
-   // subtracting 1024 inverts the signal
-
-   delay(100);
-
-    // step 1: spin brian in a circle
-    int fullCircle = 4*rightAngleTurnDelay - 100;
-    int maxValue = 0;
-    time_t maxValueTime = millis();
-    time_t start = millis();
-    time_t current_time = start;
-    brian::turn_clockwise();
-    while (current_time < start + fullCircle) {
-        int lightSensorValue = brian::read_light();
-        //Serial.println(lightSensorValue);
-        if (lightSensorValue > maxValue) {
-            maxValue = lightSensorValue;
-            maxValueTime = millis();
-        }
-        delay(100);
-        current_time = millis();
-    }
-    brian::stop_both();
-    delay(500);
-    //Serial.println(maxValue);
-    time_t deltaTime =  maxValueTime - start;
-    brian::turn_clockwise();
-    delay(deltaTime);
-    delay(200);
-
-    // step 2: moth mode: move forward, but
-
-    // Serial.print("Start: ");
-    // Serial.println(start);
-    // Serial.print("maxValueTime: ");
-    // Serial.println(maxValueTime);
-    // Serial.print("deltaTime: ");
-    // Serial.println(deltaTime);
-    // Serial.print("maxValue: ");
-    // Serial.println(maxValue);
-}
-
-// https://arduino-esp8266.readthedocs.io/en/2.5.0/esp8266wifi/readme.html
 void setup()
 {
     brian::begin();
-    //Serial.println(lightSensorValue);
     Serial.begin(9600);
-
-    /*
-    Serial.begin(115200); 
-    Serial.println();
-  
-    WiFi.begin("CI_GUEST", "Computer21?!");
-  
-    Serial.print("Connecting");
-    while (WiFi.status() != WL_CONNECTED)
-    {
-      delay(500);
-      Serial.print(".");
-    }
-    Serial.println();
-  
-    Serial.print("Connected, IP address: ");
-    Serial.println(WiFi.localIP());
-    */ 
-
 }
 
 void loop()
 {
-    // brianDoThings();
-    brian::stop_both();
-
-    //if (brian::read_radar() > 30) {
-    // brian::move_forward();
-    //}
-
+    brian::read_radar(); 
+    
     delay(500);
 }
