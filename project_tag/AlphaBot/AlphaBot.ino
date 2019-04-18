@@ -5,10 +5,13 @@
     Mobile Robotics 
  */
 
+ // J10 and J9 and J10 on the board. rx is green - j9. texas is blue - j10. 
+
 #include <seeed_pwm.h>
 #include <Hercules_dfs.h>
 #include <Ultrasonic.h>
-#include <Time.h> 
+#include <Time.h>
+// #include <ESP8266WiFi.h> 
 
 const long freqLeftForward = 10000;
 const long freqRightForward = 8400;
@@ -25,12 +28,11 @@ const char Backward = DIRR;
 
 const int ULTRASONIC_PIN = 11;
 
-int analogPin = A1;
+int analogPin = A1; 
 int lightSensorValue = 0; 
 
 namespace brian 
 {
-
     void begin()
     {
 
@@ -246,11 +248,30 @@ void brianDoThings()
     // Serial.println(maxValue);
 }
 
+// https://arduino-esp8266.readthedocs.io/en/2.5.0/esp8266wifi/readme.html
 void setup()
 {
     brian::begin();
     //Serial.println(lightSensorValue);
     Serial.begin(9600);
+
+    /*
+    Serial.begin(115200); 
+    Serial.println();
+  
+    WiFi.begin("CI_GUEST", "Computer21?!");
+  
+    Serial.print("Connecting");
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println();
+  
+    Serial.print("Connected, IP address: ");
+    Serial.println(WiFi.localIP());
+    */ 
 
 }
 
