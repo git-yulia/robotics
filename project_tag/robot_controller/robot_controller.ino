@@ -4,10 +4,16 @@
   Spring 2019 
 */
 
-int trigger_pin = 11; 
-int echo_pin = 26;  
-int IR_pin = 22; 
+const int trigger_pin = 11; 
+const int echo_pin = 26;  
+const int IR_pin = 22; 
+const int mic_pin = A0; 
 
+// vars for the mic module 
+const int mic_input_window = 100; 
+unsigned int mic_sample; 
+
+// vars for the "distance to object" module 
 long duration, cm, inches;
 
 void setup() {
@@ -15,6 +21,7 @@ void setup() {
   pinMode(IR_pin, INPUT);
   pinMode(trigger_pin, OUTPUT); 
   pinMode(echo_pin, INPUT); 
+  pinMode(mic_pin, INPUT); 
 }
 
 // returns True if there is an enemy in front of us (enemy is TBD)
@@ -50,7 +57,31 @@ int get_distance_to_obstacle (int type) {
   return distance_to_obstacle; 
 }
 
-void loop() {
+void get_microphone_data() {
+// two variables for minimum and maximum values in window
+  unsigned int inputMax = 0;
+  unsigned int inputMin = 1024;
+
+  // loop for the window of time 
+  for (unsigned int i = 0; i < mic_input_window; i++) {
+    // read in a single value
+    mic_sample = analogRead(mic_pin);
+    // get the minimum and maximum value
+    inputMin = min(inputMin, mic_sample);
+    inputMax = max(inputMax, mic_sample);
+  }
+
+  // send the values on serial
+  Serial.print("Min: ");
+  Serial.print(inputMin);
+  Serial.print("  Max: ");
+  Serial.print(inputMax);
+  Serial.print("  Diff: ");
+  Serial.print(inputMax - inputMin);
+  Serial.println();
+}
+
+void run_test_sequence() {
   Serial.print("scanning for enemies...");
   Serial.print(detect_enemy());
   Serial.println();
@@ -58,6 +89,19 @@ void loop() {
   Serial.println("obstacle distance in cm:");
   Serial.print(get_distance_to_obstacle(1));
   Serial.println();
+
+  Serial.println("getting sound data from the real world..."); 
+  get_microphone_data(); 
+  Serial.println(); 
+}
+
+void loop() {
+  run_test_sequence(); // tests components 
+
+  
+
+
+  
   
   delay(1000);
 }
