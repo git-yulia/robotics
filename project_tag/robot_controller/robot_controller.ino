@@ -4,10 +4,9 @@
   Spring 2019 
 */
 
-const int trigger_pin = 11; 
-const int echo_pin = 26;  
-const int IR_pin = 22; 
+const int IR_pin = 13; 
 const int mic_pin = A0; 
+const int buzz_pin = 8; 
 
 // vars for the mic module 
 const int mic_input_window = 100; 
@@ -81,25 +80,31 @@ void get_microphone_data() {
   Serial.println();
 }
 
+void buzzer() {
+  tone(11, 500, 1000);
+}
+
 void run_test_sequence() {
   Serial.print("scanning for enemies...");
   Serial.print(detect_enemy());
   Serial.println();
-
-  Serial.println("obstacle distance in cm:");
-  Serial.print(get_distance_to_obstacle(1));
+  // 
+  Serial.print("obstacle distance in cm: ");
+  // Serial.print(get_distance_to_obstacle(1));
   Serial.println();
 
   Serial.println("getting sound data from the real world..."); 
-  get_microphone_data(); 
+  // get_microphone_data(); 
   Serial.println(); 
+
+  delay(1000); 
 }
 
 void loop() {
   run_test_sequence(); // tests components 
 
   
-
+ 
 
   
   
