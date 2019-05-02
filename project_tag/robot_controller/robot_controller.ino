@@ -4,6 +4,8 @@
   Spring 2019 
 */
 
+#include "Ultrasonic.h"
+
 const int IR_pin = 13; 
 const int mic_pin = A0; 
 const int buzz_pin = 8; 
@@ -14,12 +16,11 @@ unsigned int mic_sample;
 
 // vars for the "distance to object" module 
 long duration, cm, inches;
+Ultrasonic ultrasonic(10);
 
 void setup() {
   Serial.begin(9600);
   pinMode(IR_pin, INPUT);
-  pinMode(trigger_pin, OUTPUT); 
-  pinMode(echo_pin, INPUT); 
   pinMode(mic_pin, INPUT); 
 }
 
@@ -33,26 +34,27 @@ bool detect_enemy() {
 
 // returns the distance to the obstacle in front of it 
 // type = 0 gives you inche | type = 1 gives you cm 
-int get_distance_to_obstacle (int type) {
-  int distance_to_obstacle = 0; 
+long get_distance_to_obstacle (int type) {
+    long RangeInInches;
+    long RangeInCentimeters;
+    long distance_to_obstacle; 
 
-  digitalWrite(trigger_pin, LOW);
-  delayMicroseconds(5);
-  digitalWrite(trigger_pin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigger_pin, LOW);
+    Serial.println("The distance to obstacles in front is: ");
+    RangeInInches = ultrasonic.MeasureInInches();
+    Serial.print(RangeInInches);//0~157 inches
+    Serial.println(" inch");
+    delay(250);
 
-  // Read the signal from the sensor: a HIGH pulse whose
-  // duration is the time (in microseconds) from ping to echo reception 
-  pinMode(echo_pin, INPUT);
-  duration = pulseIn(echo_pin, HIGH);
+    RangeInCentimeters = ultrasonic.MeasureInCentimeters(); // two measurements should keep an interval
+    Serial.print(RangeInCentimeters);//0~400cm
+    Serial.println(" cm");
+    delay(250);
 
-  // convert the time (duration) to a distance 
   if (type == 0) 
-    distance_to_obstacle = (duration/2) / 74;   // distance in inches 
+    distance_to_obstacle = RangeInInches;
   else 
-    distance_to_obstacle = (duration/2) / 29.1; // distance in cm 
-  
+    distance_to_obstacle = RangeInCentimeters; 
+     
   return distance_to_obstacle; 
 }
 
@@ -90,7 +92,7 @@ void run_test_sequence() {
   Serial.println();
   // 
   Serial.print("obstacle distance in cm: ");
-  // Serial.print(get_distance_to_obstacle(1));
+  Serial.print(get_distance_to_obstacle(1));
   Serial.println();
 
   Serial.println("getting sound data from the real world..."); 
