@@ -14,6 +14,15 @@ const int buzz_pin = 8;
 const int mic_input_window = 100; 
 unsigned int mic_sample; 
 
+// const vars for motors 
+const int ENA = 13;
+const int IN1 = 12;
+const int IN2 = 11;
+
+const int IN3 = 10;
+const int IN4 = 9;
+const int ENB = 8;
+
 // vars for the "distance to object" module 
 long duration, cm, inches;
 Ultrasonic ultrasonic(10);
@@ -22,6 +31,21 @@ void setup() {
   Serial.begin(9600);
   pinMode(IR_pin, INPUT);
   pinMode(mic_pin, INPUT); 
+
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  digitalWrite(ENA, HIGH);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+
+  digitalWrite(ENB, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
 }
 
 // returns True if there is an enemy in front of us (enemy is TBD)
@@ -105,7 +129,7 @@ void run_test_sequence() {
 void loop() {
   run_test_sequence(); // tests components 
 
-  
+  // tone(2, 500, 1000);
  
 
   
