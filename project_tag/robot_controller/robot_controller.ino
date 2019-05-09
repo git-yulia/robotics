@@ -6,7 +6,7 @@
 
 #include "Ultrasonic.h"
 
-const int IR_pin = 13; 
+const int IR_pin = 2; 
 const int mic_pin = A0; 
 const int buzz_pin = 8; 
 
@@ -19,7 +19,7 @@ const int ENA = 13;
 const int IN1 = 12;
 const int IN2 = 11;
 
-const int IN3 = 10;
+const int IN3 = 5;
 const int IN4 = 9;
 const int ENB = 8;
 
@@ -39,13 +39,17 @@ void setup() {
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
-  digitalWrite(ENA, HIGH);
+  
+  analogWrite(ENA, 100);
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
 
-  digitalWrite(ENB, HIGH);
+  analogWrite(ENB, 100);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+
+
+  
 }
 
 // returns True if there is an enemy in front of us (enemy is TBD)
@@ -114,13 +118,13 @@ void run_test_sequence() {
   Serial.print("scanning for enemies...");
   Serial.print(detect_enemy());
   Serial.println();
-  // 
+  
   Serial.print("obstacle distance in cm: ");
   Serial.print(get_distance_to_obstacle(1));
   Serial.println();
 
   Serial.println("getting sound data from the real world..."); 
-  // get_microphone_data(); 
+  get_microphone_data(); 
   Serial.println(); 
 
   delay(1000); 
