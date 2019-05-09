@@ -6,9 +6,9 @@
 
 #include "Ultrasonic.h"
 
-const int IR_pin = 2; 
+const int IR_pin = 4; 
 const int mic_pin = A0; 
-const int buzz_pin = 8; 
+// const int buzz_pin = 8; 
 
 // vars for the mic module 
 const int mic_input_window = 100; 
@@ -25,7 +25,7 @@ const int ENB = 8;
 
 // vars for the "distance to object" module 
 long duration, cm, inches;
-Ultrasonic ultrasonic(10);
+Ultrasonic ultrasonic(2);
 
 void setup() {
   Serial.begin(9600);
@@ -38,18 +38,6 @@ void setup() {
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
-
-  
-  analogWrite(ENA, 100);
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-
-  analogWrite(ENB, 100);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-
-
-  
 }
 
 // returns True if there is an enemy in front of us (enemy is TBD)
@@ -68,20 +56,20 @@ long get_distance_to_obstacle (int type) {
     long distance_to_obstacle; 
 
     Serial.println("The distance to obstacles in front is: ");
+
+
+  if (type == 0) {
     RangeInInches = ultrasonic.MeasureInInches();
     Serial.print(RangeInInches);//0~157 inches
     Serial.println(" inch");
-    delay(250);
-
+    distance_to_obstacle = RangeInInches;
+  }
+  else {
     RangeInCentimeters = ultrasonic.MeasureInCentimeters(); // two measurements should keep an interval
     Serial.print(RangeInCentimeters);//0~400cm
     Serial.println(" cm");
-    delay(250);
-
-  if (type == 0) 
-    distance_to_obstacle = RangeInInches;
-  else 
     distance_to_obstacle = RangeInCentimeters; 
+  }
      
   return distance_to_obstacle; 
 }
@@ -127,16 +115,76 @@ void run_test_sequence() {
   get_microphone_data(); 
   Serial.println(); 
 
+  // buzz(); 
+
   delay(1000); 
 }
 
-void loop() {
-  run_test_sequence(); // tests components 
+void buzz() {
+  tone(2, 500, 1000);
+}
 
-  // tone(2, 500, 1000);
+void drive_forward() {
+  analogWrite(ENA, 140);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+
+  analogWrite(ENB, 75);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+}
+
+void drive_backward() {
+  analogWrite(ENA, 140);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  analogWrite(ENB, 75);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+}
+
+void stop_agunia() {
+  analogWrite(ENA, 0);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+
+  analogWrite(ENB, 0);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+}
+
+void turn_left_backward() {
+  analogWrite(ENA, 190);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+
+  analogWrite(ENB, 75);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+}
+
+void drive_around() {
+  while(get_distance_to_obstacle(1) > 15) {
+    drive_forward(); 
+  }
+  stop_agunia();
+  delay(200); 
+
+  turn_left_backward(); 
+  delay(800);
+}
+
+void loop() {
+  // run_test_sequence();
+  drive_around(); 
+
+  
+  
+  
  
 
   
   
-  delay(1000);
+  delay(200);
 }
