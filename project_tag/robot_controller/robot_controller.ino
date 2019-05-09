@@ -159,20 +159,27 @@ void turn_left_backward() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
 
-  analogWrite(ENB, 75);
+  analogWrite(ENB, 0);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
 }
 
 void drive_around() {
   while(get_distance_to_obstacle(1) > 15) {
+    Serial.println("going forward");
     drive_forward(); 
   }
+  
   stop_agunia();
-  delay(200); 
+  delay(500); 
+
+  while(get_distance_to_obstacle(1) <= 15) {
+    Serial.println("going back");
+    drive_backward(); 
+  }
 
   turn_left_backward(); 
-  delay(800);
+  delay(400);
 }
 
 void loop() {
