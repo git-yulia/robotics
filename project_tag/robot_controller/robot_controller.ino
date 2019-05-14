@@ -6,7 +6,7 @@
 
 #include "Ultrasonic.h"
 
-const int IR_pin = 4; 
+const int IR_pin = 7; 
 const int mic_pin = A0; 
 const int buzz_pin = 11; 
 
@@ -19,7 +19,7 @@ const int ENA = 13;
 const int IN1 = 12;
 const int IN2 = 11;
 
-const int IN3 = 5;
+const int IN3 = 5; //6
 const int IN4 = 9;
 const int ENB = 8; 
 
@@ -42,8 +42,10 @@ void setup() {
 
 // returns True if there is an enemy in front of us (enemy is TBD)
 bool detect_enemy() {
-  if (digitalRead(IR_pin) == 0) 
+  if (digitalRead(IR_pin) == 1) {
+    Serial.println("found");
     return true; 
+  }
   else
     return false; 
 }
@@ -111,8 +113,6 @@ void run_test_sequence() {
   get_microphone_data(); 
   Serial.println(); 
 
-  // buzz(); 
-
   delay(1000); 
 }
 
@@ -121,11 +121,11 @@ void buzz() {
 }
 
 void drive_forward() {
-  analogWrite(ENA, 100);
+  analogWrite(ENA, 0);
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
 
-  analogWrite(ENB, 100);
+  analogWrite(ENB, 200);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
 }
@@ -180,7 +180,16 @@ void drive_around() {
 
 void detect_betabot() {
 
-
+ if (detect_enemy()) {
+    while(get_distance_to_obstacle(1) > 15) {
+      Serial.println("going forward");
+      drive_forward(); 
+    }
+    
+    delay(500);
+ }
+ 
+ stop_agunia(); 
   
 }
 
@@ -190,6 +199,7 @@ void loop() {
 
   detect_betabot(); 
 
+  drive_forward(); 
   
   
   
@@ -197,5 +207,5 @@ void loop() {
 
   
   
-  delay(200);
+  delay(1000);
 }
