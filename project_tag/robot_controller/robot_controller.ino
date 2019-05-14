@@ -15,13 +15,13 @@ const int mic_input_window = 100;
 unsigned int mic_sample; 
 
 // const vars for motors 
-const int ENA = 13;
-const int IN1 = 12;
-const int IN2 = 11;
+const int ENA = 8;
+const int IN1 = 9;
+const int IN2 = 10;
 
-const int IN3 = 5; //6
-const int IN4 = 9;
-const int ENB = 8; 
+const int IN3 = 6; 
+const int IN4 = 12;
+const int ENB = 13; 
 
 // vars for the "distance to object" module 
 long duration, cm, inches;
@@ -121,16 +121,6 @@ void buzz() {
 }
 
 void drive_forward() {
-  analogWrite(ENA, 0);
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-
-  analogWrite(ENB, 200);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
-}
-
-void drive_backward() {
   analogWrite(ENA, 100);
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
@@ -138,6 +128,16 @@ void drive_backward() {
   analogWrite(ENB, 100);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
+}
+
+void drive_backward() {
+  analogWrite(ENA, 100);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+
+  analogWrite(ENB, 100);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
 }
 
 void stop_agunia() {
@@ -199,7 +199,7 @@ void loop() {
 
   detect_betabot(); 
 
-  drive_forward(); 
+  drive_backward(); 
   
   
   
