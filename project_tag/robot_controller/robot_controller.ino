@@ -8,7 +8,7 @@
 
 const int IR_pin = 4; 
 const int mic_pin = A0; 
-// const int buzz_pin = 8; 
+const int buzz_pin = 11; 
 
 // vars for the mic module 
 const int mic_input_window = 100; 
@@ -21,7 +21,7 @@ const int IN2 = 11;
 
 const int IN3 = 5;
 const int IN4 = 9;
-const int ENB = 8;
+const int ENB = 8; 
 
 // vars for the "distance to object" module 
 long duration, cm, inches;
@@ -98,10 +98,6 @@ void get_microphone_data() {
   Serial.println();
 }
 
-void buzzer() {
-  tone(11, 500, 1000);
-}
-
 void run_test_sequence() {
   Serial.print("scanning for enemies...");
   Serial.print(detect_enemy());
@@ -121,25 +117,25 @@ void run_test_sequence() {
 }
 
 void buzz() {
-  tone(2, 500, 1000);
+  tone(buzz_pin, 500, 1000);
 }
 
 void drive_forward() {
-  analogWrite(ENA, 140);
+  analogWrite(ENA, 100);
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
 
-  analogWrite(ENB, 75);
+  analogWrite(ENB, 100);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
 }
 
 void drive_backward() {
-  analogWrite(ENA, 140);
+  analogWrite(ENA, 100);
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
 
-  analogWrite(ENB, 75);
+  analogWrite(ENB, 100);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
 }
@@ -182,9 +178,17 @@ void drive_around() {
   delay(400);
 }
 
+void detect_betabot() {
+
+
+  
+}
+
 void loop() {
   // run_test_sequence();
-  drive_around(); 
+  // drive_around(); 
+
+  detect_betabot(); 
 
   
   
