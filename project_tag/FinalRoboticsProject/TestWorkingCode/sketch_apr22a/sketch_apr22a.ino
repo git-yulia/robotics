@@ -188,7 +188,7 @@ void loop ()
   for (unsigned char i = 0 ; i < NUM_ANGLES ; i ++)
     readNextDistance (), delay (20);
 
-  if (detect_enemy()) {
+  if (digitalRead(IR_pin) == 0) {
     servo.write( sensorAngle[1] );
     scream(); 
   }
@@ -216,7 +216,7 @@ void loop ()
   */ 
 
   unsigned long currentMillis = millis();
-  int interval = 1000; 
+  int interval = 10; 
 
   int pin = 8; 
  
@@ -234,4 +234,7 @@ void loop ()
     // set the LED with the ledState of the variable:
     digitalWrite(pin, ledState);
   }
+
+  
+  delay(500);
 }

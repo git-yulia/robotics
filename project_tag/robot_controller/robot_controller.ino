@@ -220,16 +220,18 @@ void find_betabot() {
     delay(100);
  }
 
+  /*
   buzz(); 
   delay(200);
   noTone(buzz_pin);
   analogWrite(buzz_pin, 0);
+  */ 
   
-    while(get_distance_to_obstacle(1) > 15) {
-      Serial.println("going forward");
-      drive_forward(); 
-    }
-    delay(300);
+  while(get_distance_to_obstacle(1) > 15) {
+    Serial.println("going forward");
+    drive_forward(); 
+  }
+  delay(300);
  
  stop_agunia(); 
   
