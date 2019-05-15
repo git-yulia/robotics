@@ -8,7 +8,9 @@
 
 const int IR_pin = 7; 
 const int mic_pin = A0; 
-const int buzz_pin = 11; 
+const int buzz_pin = A11; 
+
+unsigned long previousTime = 0; 
 
 // vars for the mic module 
 const int mic_input_window = 100; 
@@ -38,16 +40,39 @@ void setup() {
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
+  analogWrite(buzz_pin, 0);
 }
 
 // returns True if there is an enemy in front of us (enemy is TBD)
 bool detect_enemy() {
-  if (digitalRead(IR_pin) == 1) {
-    Serial.println("found");
-    return true; 
+  bool enemy_found = false; 
+  unsigned long currentTime = millis();
+  unsigned long previousTime = millis();
+  int interval = 4000; 
+
+  // these vars are for determining how fast the IR is blinking
+  bool IR_detected = false; 
+  int number_of_changes = 0; 
+  
+  // measure for an interval and then decide if enemy or self
+  while (currentTime < (previousTime + interval)) {
+    currentTime = millis(); 
+
+    if (digitalRead(IR_pin) != IR_detected) {
+      number_of_changes++; 
+      IR_detected = digitalRead(IR_pin); 
+    }
   }
-  else
-    return false; 
+
+  if (number_of_changes < 8) {
+     enemy_found = true; 
+  }
+
+  Serial.println("number of changes");
+  Serial.println(number_of_changes);
+  delay(1000);
+  
+  return enemy_found; 
 }
 
 // returns the distance to the obstacle in front of it 
@@ -117,8 +142,9 @@ void run_test_sequence() {
 }
 
 void buzz() {
-  tone(buzz_pin, 500, 1000);
+  tone(buzz_pin, 300, 100);
 }
+
 
 void drive_forward() {
   analogWrite(ENA, 100);
@@ -161,11 +187,6 @@ void turn_left_backward() {
 }
 
 void drive_around() {
-  while(get_distance_to_obstacle(1) > 15) {
-    Serial.println("going forward");
-    drive_forward(); 
-  }
-  
   stop_agunia();
   delay(500); 
 
@@ -178,16 +199,37 @@ void drive_around() {
   delay(400);
 }
 
-void detect_betabot() {
+void drive_forward_a_bit() {
+  Serial.println();
+}
 
- if (detect_enemy()) {
+void sweep() {
+  // turn in an arc
+
+  // if you see beta bot, stop
+
+  Serial.println();
+  
+}
+
+void find_betabot() {
+  
+ while (detect_enemy() == false) {
+    drive_forward_a_bit(); 
+    sweep(); 
+    delay(100);
+ }
+
+  buzz(); 
+  delay(200);
+  noTone(buzz_pin);
+  analogWrite(buzz_pin, 0);
+  
     while(get_distance_to_obstacle(1) > 15) {
       Serial.println("going forward");
       drive_forward(); 
     }
-    
-    delay(500);
- }
+    delay(300);
  
  stop_agunia(); 
   
@@ -197,15 +239,7 @@ void loop() {
   // run_test_sequence();
   // drive_around(); 
 
-  detect_betabot(); 
-
-  drive_backward(); 
+  find_betabot(); 
   
   
-  
- 
-
-  
-  
-  delay(1000);
 }

@@ -23,6 +23,10 @@ const int in3Pin = 4; // Right motor Direction 1
 const int in4Pin = 2; // Right motor Direction 2
 const int enBPin = 3; // Right motor PWM speed control
 
+const int IR_pin = 9; 
+
+unsigned long previousMillis = 0; 
+int ledState = LOW;   
 
 enum Motor { LEFT, RIGHT };
 
@@ -35,10 +39,7 @@ void go(enum Motor m, int speed)
 }
 
 
-
-// Initial motor test :
-// left motor forward then back
-// right motor forward then back
+// Initial motor test
 void testMotors ()
 {
   static int speed[8] = { 128, 255, 128, 0 ,
@@ -63,13 +64,12 @@ unsigned int readDistance ()
   delayMicroseconds(10);
   digitalWrite ( trigPin , LOW );
   unsigned long period = pulseIn ( echoPin, HIGH );
-  Serial.print(period);
-  Serial.print("cm, ");
+  //Serial.print(period);
+  // Serial.print("cm, ");
   Serial.println();
   return period * 343 / 2000;
 
 }
-
 
 
 #define NUM_ANGLES 7
@@ -91,8 +91,6 @@ void readNextDistance()
 
 }
 
-
-
 // Initial configuration
 //
 // Configure the input and output pins
@@ -113,6 +111,7 @@ void setup ()
   pinMode(in3Pin, OUTPUT);
   pinMode(in4Pin, OUTPUT);
   pinMode(enBPin, OUTPUT);
+  pinMode(8, OUTPUT); 
   servo.attach ( servoPin );
   servo.write (90);
   go(LEFT, 0);
@@ -120,14 +119,59 @@ void setup ()
   
   // testMotors ();
   // Scan the surroundings before starting
+  /*
   servo.write( sensorAngle[0] );
   delay (200);
   for (unsigned char i = 0 ; i < NUM_ANGLES ; i ++)
     readNextDistance (), delay (200);
+    */ 
 
 }
 
+bool detect_enemy() {
+  bool enemy_found = false; 
+  unsigned long currentTime = millis();
+  unsigned long previousTime = millis();
+  int interval = 4000; 
 
+  // these vars are for determining how fast the IR is blinking
+  bool IR_detected = false; 
+  int number_of_changes = 0; 
+  
+  // measure for an interval and then decide if enemy or self
+  while (currentTime < (previousTime + interval)) {
+    currentTime = millis(); 
+
+    if (digitalRead(IR_pin) != IR_detected) {
+      number_of_changes++; 
+      IR_detected = digitalRead(IR_pin); 
+    }
+  }
+
+  if (number_of_changes > 1) {
+     enemy_found = true; 
+  }
+
+
+  delay(1000);
+  
+  return enemy_found; 
+}
+
+void scream() {
+  int buzz_pin = A0; 
+
+  int index = 0; 
+  while (index < 500) {
+    tone(buzz_pin, (index * 1.75), 800);
+    index++; 
+  }
+
+  tone(buzz_pin, (500 * 1.75), 8000);
+
+  delay(800);
+  noTone(buzz_pin);
+}
 
 // Main loop:
 //
@@ -138,6 +182,18 @@ void setup ()
 void loop () 
 {
   // readNextDistance ();
+
+  servo.write( sensorAngle[0] );
+  delay (20);
+  for (unsigned char i = 0 ; i < NUM_ANGLES ; i ++)
+    readNextDistance (), delay (20);
+
+  if (detect_enemy()) {
+    servo.write( sensorAngle[1] );
+    scream(); 
+  }
+
+
 
 
 // COMMENTED because I want the BetaBot stationary while he is captured 
@@ -158,6 +214,24 @@ void loop ()
     go(RIGHT, 150);
   }
   */ 
-  
-  delay (50);
+
+  unsigned long currentMillis = millis();
+  int interval = 1000; 
+
+  int pin = 8; 
+ 
+  if (currentMillis - previousMillis >= interval) {
+    // save the last time you blinked the LED
+    previousMillis = currentMillis;
+ 
+    // if the LED is off turn it on and vice-versa:
+    if (ledState == LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+ 
+    // set the LED with the ledState of the variable:
+    digitalWrite(pin, ledState);
+  }
 }
